@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+* {
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
