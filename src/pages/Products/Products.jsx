@@ -40,7 +40,7 @@ function Products() {
   };
   const handleUpdate = async () => {
     try {
-      const datas = data.filter((dat) =>
+      const datas = data.map((dat) =>
         dat.nama === selectedProduk.nama ? { ...dat, ...newProduk } : dat
       );
       setData(datas);
@@ -59,6 +59,26 @@ function Products() {
     } catch (err) {
       showToast.error(err.message || "Gagal");
     }
+  };
+
+  const [sortOption, setSortOption] = useState("harga-asc");
+
+  const sortData = (option) => {
+    const [key, order] = option.split("-");
+    const sorted = [...data].sort((a, b) => {
+      if (order === "asc") {
+        return a[key] > b[key] ? 1 : -1;
+      } else {
+        return a[key] < b[key] ? 1 : -1;
+      }
+    });
+    setData(sorted);
+  };
+
+  const handleSortChange = (e) => {
+    const option = e.target.value;
+    setSortOption(option);
+    sortData(option);
   };
 
   let mapping = data.map((data, index) => {
@@ -106,11 +126,19 @@ function Products() {
   });
   useEffect(() => {
     const filterDatas = data.filter((dat) =>
-      dat.nama.toLowerCase().includes(search.toLocaleLowerCase())
+      dat.harga.includes(search)
     );
     setfilterData(filterDatas);
     console.log(data);
   }, [data, search, filterData]);
+
+  const formatharga = (value) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(value);
+  };
 
   return (
     <div className="w-full min-h-[100vh] bg-slate-900">
@@ -131,6 +159,7 @@ function Products() {
           </div>
         </div>
       </div>
+
       <div className="w-full h-auto flex justify-between p-4 border-b-1 border-grey">
         <input
           type="text"
@@ -139,6 +168,13 @@ function Products() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <label>Urutkan berdasarkan: </label>
+        <select className="text-white" value={sortOption} onChange={handleSortChange}>
+          <option className="text-black" value="harga-asc">Harga Termurah</option>
+          <option className="text-black" value="harga-desc">Harga Termahal</option>
+          <option className="text-black" value="stok-asc">Stok Terendah</option>
+          <option className="text-black" value="stok-desc">Stok Tertinggi</option>
+        </select>
         <Button variant="none" onClick={() => setShowModal(true)}>
           <Card
             layout="horizontal"
@@ -168,7 +204,7 @@ function Products() {
                   <div className="card-body">
                     <h2 className="card-title">{data.nama}</h2>
                     <p>
-                      Rp.{data.harga}/{data.stok}
+                      {formatharga(data.harga)}/{data.stok}
                     </p>
                     <div className="card-actions justify-end">
                       <button
@@ -214,7 +250,7 @@ function Products() {
                   <div className="card-body">
                     <h2 className="card-title">{data.nama}</h2>
                     <p>
-                      Rp.{data.harga}/{data.stok}
+                      {formatharga(data.harga)}/{data.stok}
                     </p>
                     <div className="card-actions justify-end">
                       <button

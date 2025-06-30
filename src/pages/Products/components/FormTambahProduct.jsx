@@ -36,7 +36,13 @@ const FormTambahProduct = ({
     const numericValue = value.replace(/[^0-9]/g, "");
     setNewProduk({ ...newProduk, stok: numericValue });
   };
-
+  const formatharga = (value) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(value);
+  };
   return (
     <form
       onSubmit={(e) => {
@@ -67,7 +73,7 @@ const FormTambahProduct = ({
             className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black `.trim()}
             type="text"
             placeholder="Masukkan harga"
-            value={newProduk.harga}
+            value={formatharga(newProduk.harga)}
             onChange={handlehargaChange}
             required
           />
